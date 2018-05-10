@@ -3,20 +3,20 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lkaser <lkaser@student.42.fr>              +#+  +:+       +#+         #
+#    By: ihodge <ihodge@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2017/04/20 13:52:57 by lkaser            #+#    #+#              #
-#    Updated: 2018/05/07 12:23:57 by ihodge           ###   ########.fr        #
+#    Created: 2017/04/20 13:52:57 by ihodge            #+#    #+#              #
+#    Updated: 2018/05/09 16:47:30 by ihodge           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = avm
-LIST = 
+LIST = main Create Int8 Int16 Int32 Float Double
 
 SRC = $(addsuffix .cpp, $(LIST))
 OBJ = $(addsuffix .o, $(LIST))
 
-CCFLAGS = -O3 -Wall -Wextra -Werror -lncurses
+CCFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
