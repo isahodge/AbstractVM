@@ -1,51 +1,48 @@
 /*
  * deifinitions
  */
-%option noyywrap
 
 %{
-#include "Create.hpp"
-#include "IOperand.hpp"
-#include "Int8.hpp"
+//%option noyywrap
 #include <iostream>
+#include <string.h>
+#include "IOperand.hpp"
 #include "header.h"
-#include <stack>
+#define YY_DECL extern "C" int yylex()
+#include "parser.tab.h"
 %}
-
-DIGIT	[0-9]
-
-%%
-
-{DIGIT}+	printf("a digit %s\n", yytext);
-push	printf("recognized the push command\n");
-pop		printf("recognized the pop command\n");
-dump	printf("recognized the dump command\n");
-assert	printf("recognized the assert command\n");
-add		printf("recognized the add command\n");
-sub		printf("recognized the sub command\n");
-mul		printf("recognized the mul command\n");
-div		printf("recognized the div command\n");
-mod		printf("recognized the mod command\n");
-print	printf("recognized the print command\n");
-exit	printf("recognized the exit command\n");
-[ \t\n]+          /* eat up whitespace */
+%x REALLYEND
+DIGIT	[-]?[0-9]+
+FLOAT	[-]?[0-9]+\.[0-9]+
+INSTR	[a-z]+
 
 %%
 
-int		main(void)
-{
-	yyin = stdin;
-	yylex();
-	Create factory;
-	std::stack <IOperand const *> vm;
+{DIGIT}	{ yylval.sval = strdup(yytext); return INTEGER; }
+{FLOAT} { yylval.sval = strdup(yytext); return FLOAT; }
+push	{ yylval.ival = 1; return PUSH; }
+assert	{ yylval.ival = 2; return ASSERT; }
+pop		{ yylval.ival = 3; return COMMAND; }
+dump	{ yylval.ival = 4; return COMMAND; }
+print	{ yylval.ival = 5; return COMMAND; }
+add		{ yylval.ival = 6; return COMMAND; }
+sub		{ yylval.ival = 7; return COMMAND; }
+mul		{ yylval.ival = 8; return COMMAND; }
+div		{ yylval.ival = 9; return COMMAND; }
+mod		{ yylval.ival = 10; return COMMAND; }
+int8	{ yylval.eval = Int8; return VAL; }
+int16	{ yylval.eval = Int16; return VAL; }
+int32	{ yylval.eval = Int32; return VAL; }
+float	{ yylval.eval = Double; return FVAL; }
+double	{ yylval.eval = Float; return FVAL; }
+exit	{  return EXIT; }
+{INSTR}	{ std::cout << "unrecognized command/value "  << yytext; }
+\;\;	return EXIT;
+\;.*	;
+\(		return '(';
+\)		return ')';
+[\n\r]	return SEP;
+[ \t\n]	;
+.		std::cout << "lexical error: character not in dictionary\n";
 
-	vm.push(factory.createOperand(Int8, "10"));
-	vm.push(factory.createOperand(Int8, "5"));
-	const IOperand *lhs = vm.top();
-	vm.pop();
-	const IOperand *rhs = vm.top();
-	vm.pop();
-	vm.push(*lhs + *rhs);
-	std::cout << vm.top()->toString() << std::endl;
-	return (0);
-}
+%%
