@@ -11,7 +11,6 @@
 #define YY_DECL extern "C" int yylex()
 #include "parser.tab.h"
 %}
-%x REALLYEND
 DIGIT	[-]?[0-9]+
 FLOAT	[-]?[0-9]+\.[0-9]+
 INSTR	[a-z]+
@@ -33,11 +32,11 @@ mod		{ yylval.ival = 10; return COMMAND; }
 int8	{ yylval.eval = Int8; return VAL; }
 int16	{ yylval.eval = Int16; return VAL; }
 int32	{ yylval.eval = Int32; return VAL; }
-float	{ yylval.eval = Double; return FVAL; }
-double	{ yylval.eval = Float; return FVAL; }
-exit	{  return EXIT; }
+float	{ yylval.eval = Float; return FVAL; }
+double	{ yylval.eval = Double; return FVAL; }
+exit	{ if (yyin != stdin) return EXIT; }
 {INSTR}	{ std::cout << "unrecognized command/value "  << yytext; }
-\;\;	return EXIT;
+\;\;	{ if (yyin == stdin) return EXIT; }
 \;.*	;
 \(		return '(';
 \)		return ')';

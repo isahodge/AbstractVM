@@ -28,7 +28,7 @@ std::stack <IOperand const *> vm;
 %token <ival> ASSERT;
 %token <ival> COMMAND;
 %token <eval> VAL;
-%token <ival> FVAL;
+%token <eval> FVAL;
 %token <sval> INTEGER;
 %token <sval> FLOAT;
 %token <ival> EXIT;
@@ -42,7 +42,7 @@ s:
 
 instructs:
 		 instructs instr
-		 | instr;
+		 | instr ;
 
 instr:
 	PUSH opera
@@ -55,19 +55,48 @@ instr:
 	}
 	| COMMAND endls
 	{
+		switch ($1) {
+			case 3: 
+				std::cout << "pop\n";
+				break ;
+			case 4:
+				std::cout << "dump\n";
+				break ;
+			case 5:
+				std::cout << "print\n";
+				break ;
+			case 6:
+				std::cout << "add\n";
+				break ;
+			case 7:
+				std::cout << "sub\n";
+				break ;
+			case 8:
+				std::cout << "mul\n";
+				break ;
+			case 9:
+				std::cout << "div\n";
+				break ;
+			case 10:
+				std::cout << "mod\n";
+				break ;
+		}
 	 	std::cout << $1 << std::endl;
 	}
+	| error endls ;
 
 opera:
 	 VAL '(' INTEGER ')' endls
 	{
-		IOperand const *tmp = factory->createOperand($1, $3);
+		$$ = factory->createOperand($1, $3);
 	 	std::cout << $3 << std::endl;
-		vm.push(tmp);
+		vm.push($$);
 	}
 	 | FVAL '(' FLOAT ')' endls
 	{
+		$$ = factory->createOperand($1, $3);
 	 	std::cout << $3 << std::endl;
+		vm.push($$);
 	}
 
 endls:
@@ -80,14 +109,23 @@ int	main(void)
 {
 	yyin = stdin;
 
-	while (yyparse()) ;
-	std::cout << "vm.top:\n";
-	std::cout << vm.top()->toString() << std::endl;
+	while (yyparse()) 
+	{ 
+		if (feof(yyin))
+			break ;
+	}
+	if (!vm.empty())
+	{
+		std::cout << "vm.top:\n";
+		std::cout << vm.top()->toString() << std::endl;
+		std::cout << "vm.size:\n";
+		std::cout << vm.size() << std::endl;
+	}
+	std::cout << "End of program" << std::endl;
 	return (0);
 }
 
 void yyerror(const char *s)
 {
 	std::cout << "EEK, parse error!  Message: " << s << std::endl;
-	exit(-1);
 }
