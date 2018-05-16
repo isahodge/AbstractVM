@@ -5,7 +5,9 @@
 #include "IOperand.hpp"
 #include "Int8.hpp"
 #include "header.h"
+#include "Instr.hpp"
 #include <stack>
+#include <queue>
 #include <string>
 #include <string.h>
 extern "C" int yylex();
@@ -14,14 +16,16 @@ extern "C" FILE	*yyin;
 void yyerror(const char *s);
 
 Create *factory = new Create;
-std::stack <IOperand const *> vm;
+//std::stack <IOperand const *> vm;
+std::queue <Instr const *> instructions;
+//won't need stack, if we're able to assign eOperandType to queue after push & assert 
 %}
 
 %union {
-	IOperand const *oper;
-	eOperandType eval;
-	int		ival;
-	char	*sval;
+	IOperand const	*oper;
+	eOperandType	eval;
+	int				ival;
+	char			*sval;
 }
 
 %token <ival> PUSH;
@@ -34,7 +38,6 @@ std::stack <IOperand const *> vm;
 %token <ival> EXIT;
 %token <ival> SEP;
 %type <oper> opera;
-
 %%
 
 s:
@@ -47,41 +50,21 @@ instructs:
 instr:
 	PUSH opera
 	{
-	 	std::cout << $1 << std::endl;
+		Instr const *in;
+		in = new Instr($1, $2);
+		instructions.push(in);
 	}
 	| ASSERT opera
 	{
-	 	std::cout << $1 << std::endl;
+		Instr const *in;
+		in = new Instr($1, $2);
+		instructions.push(in);
 	}
 	| COMMAND endls
 	{
-		switch ($1) {
-			case 3: 
-				std::cout << "pop\n";
-				break ;
-			case 4:
-				std::cout << "dump\n";
-				break ;
-			case 5:
-				std::cout << "print\n";
-				break ;
-			case 6:
-				std::cout << "add\n";
-				break ;
-			case 7:
-				std::cout << "sub\n";
-				break ;
-			case 8:
-				std::cout << "mul\n";
-				break ;
-			case 9:
-				std::cout << "div\n";
-				break ;
-			case 10:
-				std::cout << "mod\n";
-				break ;
-		}
-	 	std::cout << $1 << std::endl;
+		Instr const *in;
+		in = new Instr($1);
+		instructions.push(in);
 	}
 	| error endls ;
 
@@ -89,14 +72,10 @@ opera:
 	 VAL '(' INTEGER ')' endls
 	{
 		$$ = factory->createOperand($1, $3);
-	 	std::cout << $3 << std::endl;
-		vm.push($$);
 	}
 	 | FVAL '(' FLOAT ')' endls
 	{
 		$$ = factory->createOperand($1, $3);
-	 	std::cout << $3 << std::endl;
-		vm.push($$);
 	}
 
 endls:
@@ -105,23 +84,34 @@ endls:
 
 %%
 
-int	main(void)
+int	main(int argc, char **argv)
 {
 	yyin = stdin;
-
+	if (argc == 2)
+	{
+		FILE *file = fopen(argv[1], "r");
+		if (!file)
+		{
+			std::cout << "Could not open file\n";
+			return (-1);
+		}
+		yyin = file;
+	}
 	while (yyparse()) 
 	{ 
 		if (feof(yyin))
 			break ;
 	}
-	if (!vm.empty())
-	{
-		std::cout << "vm.top:\n";
-		std::cout << vm.top()->toString() << std::endl;
-		std::cout << "vm.size:\n";
-		std::cout << vm.size() << std::endl;
-	}
 	std::cout << "End of program" << std::endl;
+	if (!instructions.empty())
+	{
+		std::cout << "instructions.size:\n";
+		std::cout << instructions.size() << std::endl;
+		std::cout << "instuctions.top:\n";
+		std::cout << instructions.front()->getInstruction() << std::endl;
+
+	}
+	vm_execute(instructions);
 	return (0);
 }
 
