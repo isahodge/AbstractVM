@@ -103,14 +103,6 @@ int	main(int argc, char **argv)
 			break ;
 	}
 	std::cout << "End of program" << std::endl;
-	if (!instructions.empty())
-	{
-		std::cout << "instructions.size:\n";
-		std::cout << instructions.size() << std::endl;
-		std::cout << "instuctions.top:\n";
-		std::cout << instructions.front()->getInstruction() << std::endl;
-
-	}
 	vm_execute(instructions);
 	return (0);
 }
