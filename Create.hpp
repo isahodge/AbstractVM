@@ -11,6 +11,8 @@ public:
 	Create( void );
 	~Create( void );
 	IOperand const * createOperand( eOperandType type, std::string const & value ) const;
+	Create( Create const & src );
+	Create & operator=( Create const & rhs );
 
 private:
 	IOperand const * createInt8( std::string const & value ) const;

@@ -17,6 +17,16 @@ Create::Create( void ) {
 	std::cout << "Create const called\n";
 }
 
+Create::Create( Create const & src )
+{
+	*this = src;
+}
+
+Create & Create::operator=( Create const & rhs )
+{
+	return *this;
+}
+
 Create::~Create( void ) {
 	std::cout << "Create decon called\n";
 }

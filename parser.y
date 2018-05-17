@@ -6,6 +6,7 @@
 #include "Int8.hpp"
 #include "header.h"
 #include "Instr.hpp"
+#include "BaseException.hpp"
 #include <stack>
 #include <queue>
 #include <string>
@@ -16,9 +17,7 @@ extern "C" FILE	*yyin;
 void yyerror(const char *s);
 
 Create *factory = new Create;
-//std::stack <IOperand const *> vm;
 std::queue <Instr const *> instructions;
-//won't need stack, if we're able to assign eOperandType to queue after push & assert 
 %}
 
 %union {
@@ -38,6 +37,7 @@ std::queue <Instr const *> instructions;
 %token <ival> EXIT;
 %token <ival> SEP;
 %type <oper> opera;
+
 %%
 
 s:
@@ -103,7 +103,13 @@ int	main(int argc, char **argv)
 			break ;
 	}
 	std::cout << "End of program" << std::endl;
-	vm_execute(instructions);
+	try {
+			vm_execute(instructions);
+		}
+		catch (BaseException &ex)
+		{
+			std::cout << ex.what() << std::endl;
+		}
 	return (0);
 }
 

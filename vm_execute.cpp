@@ -2,6 +2,7 @@
 #include "Create.hpp"
 #include "header.h"
 #include "Instr.hpp"
+#include "BaseException.hpp"
 #include <queue>
 #include <stack>
 #include <vector>
@@ -26,16 +27,30 @@ void	vm_execute(std::queue <Instr const *>& q)
 				break ;
 			case 2:
 				std::cout << "assert\n";
-				if (q.front()->getOperand()->getType() == vm.top()->getType() &&
+				try {
+				if (!vm.empty() && q.front()->getOperand()->getType() == vm.top()->getType() &&
 						!q.front()->getOperand()->toString().compare(vm.top()->toString()))
 					std::cout << "Assert true\n";
 				else
-					std::cout << "Assert false; Raise Exception\n";
+					throw BaseException("Exception: False Assert");
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
+				}
 				break ;
 			case 3:
 				std::cout << "pop\n";
-				vm.pop();
-				vm_dump.pop_back();
+				try {
+					if (vm.empty())
+						throw BaseException("Exception: Pop on empty stack");
+					vm.pop();
+					vm_dump.pop_back();
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
+				}
 				break ;
 			case 4:
 				std::cout << "dump\n";
@@ -45,9 +60,17 @@ void	vm_execute(std::queue <Instr const *>& q)
 				break ;
 			case 5:
 				std::cout << "print\n";
-				if (vm.top()->getType() == Int8)
+				try {
+				if (!vm.empty() && vm.top()->getType() == Int8)
 				{
 					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+				}
+				else
+					throw BaseException("Exception: False Assert with print operation");
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
 				}
 				break ;
 			case 6:

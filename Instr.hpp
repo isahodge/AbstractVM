@@ -1,8 +1,5 @@
 #ifndef INTSTR_HPP
 #define INTSTR_HPP
-//#include <iostream>
-//#include "IOperand.hpp"
-//#include "header.h"
 
 class IOperand;
 
@@ -12,7 +9,7 @@ public:
 	Instr( int instruction, IOperand const *operand );
 	Instr( int instruction );
 	Instr( Instr const & src );
-	//Instr & operator=( Instr const & rhs );
+	Instr & operator=( Instr const & rhs );
 	~Instr( void );
 
 	int	getInstruction( void ) const;
