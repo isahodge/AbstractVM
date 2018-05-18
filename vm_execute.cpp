@@ -11,8 +11,80 @@
 #include <string>
 #include <cstdio>
 
-//arithmetic function that takes ina a pointer to one of the funcitons below: lhs, rhs, vm, fptr
-//add, sub, mul, div, mod functions, params: lhs rhs vm
+void	add(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm)
+{
+	vm.push_back(*lhs + *rhs);
+}
+
+void	sub(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm)
+{
+	vm.push_back(*lhs - *rhs);
+}
+
+void	mul(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm)
+{
+	vm.push_back(*lhs * *rhs);
+}
+
+void	div(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm)
+{
+	vm.push_back(*lhs / *rhs);
+}
+
+void	mod(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm)
+{
+	vm.push_back(*lhs % *rhs);
+}
+
+void	arithmetic(std::vector<IOperand const *> &vm, void (*operate)(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm))
+{
+	try {
+		if (!vm.empty() && vm.size() >= 2)
+		{
+			std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
+		}
+		else
+			throw BaseException("Exception: Not enough operands to perform instruction");
+		const IOperand *rhs = vm.back();
+		vm.pop_back();
+		const IOperand *lhs = vm.back();
+		vm.pop_back();
+		operate(lhs, rhs, vm);
+	}
+	catch (BaseException &ex)
+	{
+		std::cout << ex.what() <<std::endl;
+	}
+
+}
+
+void	arith_dm(std::vector<IOperand const *> &vm, void (*operate)(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm))
+{
+	try {
+		if (!vm.empty() && vm.size() >= 2)
+			std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
+				std::endl;
+		else
+			throw BaseException("Exception: Not enough operands to perform instruction");
+	}
+	catch (BaseException &ex)
+	{
+		std::cout << ex.what() <<std::endl;
+	}
+	try {
+		const IOperand *rhs = vm.back();
+		vm.pop_back();
+		const IOperand *lhs = vm.back();
+		vm.pop_back();
+		//vm.push_back(*lhs / *rhs);
+		operate(lhs, rhs, vm);
+		}
+	catch (BaseException &ex)
+	{
+		//repush lhs?
+		std::cout << ex.what() <<std::endl;
+	}
+}
 
 void	vm_execute(std::queue <Instr const *>& q)
 {
@@ -77,116 +149,24 @@ void	vm_execute(std::queue <Instr const *>& q)
 				break ;
 			case 6:
 				std::cout << "add\n";
-				try {
-				if (!vm.empty() && vm.size() >= 2)
-				{
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
-				}
-				else
-					throw BaseException("Exception: Not enough operands to perform instruction");
-				const IOperand *rhs = vm.back();
-				vm.pop_back();
-				const IOperand *lhs = vm.back();
-				vm.pop_back();
-				vm.push_back(*lhs + *rhs);
-				}
-				catch (BaseException &ex)
-				{
-					std::cout << ex.what() <<std::endl;
-				}
+				arithmetic(vm, add);
 				break ;
 			case 7:
 				std::cout << "sub\n";
-				try {
-				if (!vm.empty() && vm.size() >= 2)
-				{
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
-				}
-				else
-					throw BaseException("Exception: Not enough operands to perform instruction");
-				const IOperand *rhs = vm.back();
-				vm.pop_back();
-				const IOperand *lhs = vm.back();
-				vm.pop_back();
-				vm.push_back(*lhs - *rhs);
-				}
-				catch (BaseException &ex)
-				{
-					std::cout << ex.what() <<std::endl;
-				}
+				arithmetic(vm, sub);
 				break ;
 			case 8:
 				std::cout << "mul\n";
-				try {
-				if (!vm.empty() && vm.size() >= 2)
-				{
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
-				}
-				else
-					throw BaseException("Exception: Not enough operands to perform instruction");
-				const IOperand *rhs = vm.back();
-				vm.pop_back();
-				const IOperand *lhs = vm.back();
-				vm.pop_back();
-				vm.push_back(*lhs * *rhs);
-				}
-				catch (BaseException &ex)
-				{
-					std::cout << ex.what() <<std::endl;
-				}
+				arithmetic(vm, mul);
 				break ;
 			case 9: {
 				std::cout << "div\n";
-				try {
-				if (!vm.empty() && vm.size() >= 2)
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
-						std::endl;
-				else
-					throw BaseException("Exception: Not enough operands to perform instruction");
-				}
-				catch (BaseException &ex)
-				{
-					std::cout << ex.what() <<std::endl;
-				}
-				try {
-				const IOperand *rhs = vm.back();
-				vm.pop_back();
-				const IOperand *lhs = vm.back();
-				vm.pop_back();
-				vm.push_back(*lhs / *rhs);
-				}
-				catch (BaseException &ex)
-				{
-					//repush lhs?
-					std::cout << ex.what() <<std::endl;
-				}
+				arith_dm(vm, div);
 				break ;
 					}
 			case 10: {
 				std::cout << "mod\n";
-				try {
-				if (!vm.empty() && vm.size() >= 2)
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
-						std::endl;
-				else
-					throw BaseException("Exception: Not enough operands to perform instruction");
-				}
-				catch (BaseException &ex)
-				{
-					std::cout << ex.what() <<std::endl;
-				}
-				try {
-				const IOperand *rhs = vm.back();
-				vm.pop_back();
-				const IOperand *lhs = vm.back();
-				vm.pop_back();
-				vm.push_back(*lhs % *rhs);
-				}
-				catch (BaseException &ex)
-				{
-					//repush lhs?
-					std::cout << ex.what() <<std::endl;
-				}
+				arith_dm(vm, mod);
 				break ;
 					 }
 		}

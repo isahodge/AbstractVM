@@ -9,7 +9,8 @@
 #include "header.h"
 #include <vector>
 #include <sstream>
-#include <fenv.h>
+#include <string>
+#include <float.h>
 
 
 Create::Create( void ) {
@@ -93,11 +94,18 @@ IOperand const * Create::createInt32( std::string const & value ) const {
 IOperand const * Create::createFloat( std::string const & value ) const {
 	float val;
 	val = (float)std::strtod(value.c_str(), NULL);
-	return (new class Float(val, value));	
+	return (new Int <float> (val, value, Float));	
 }
 
 IOperand const * Create::createDouble( std::string const & value ) const {
 	double val;
-	val = std::strtod(value.c_str(), NULL);
-	return (new class Double(val, value));	
+	val = 0;
+	try {
+		val = std::stod(value, NULL);
+	}
+	catch (std::out_of_range &ex)
+	{
+		std::cout << ex.what() << std::endl;
+	}
+	return (new Int <double> (val, value, Double));	
 }
