@@ -3,6 +3,7 @@
 #include "header.h"
 #include "Instr.hpp"
 #include "BaseException.hpp"
+#include "Template.hpp"
 #include <queue>
 #include <stack>
 #include <vector>
@@ -98,16 +99,112 @@ void	vm_execute(std::queue <Instr const *>& q)
 				break ;
 			case 7:
 				std::cout << "sub\n";
+				try {
+				if (!vm.empty() && vm.size() >= 2)
+				{
+					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+				}
+				else
+					throw BaseException("Exception: Not enough operands to perform instruction");
+				const IOperand *rhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				const IOperand *lhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				vm.push(*lhs - *rhs);
+				vm_dump.push_back(*lhs + *rhs);
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
+				}
 				break ;
 			case 8:
 				std::cout << "mul\n";
+				try {
+				if (!vm.empty() && vm.size() >= 2)
+				{
+					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+				}
+				else
+					throw BaseException("Exception: Not enough operands to perform instruction");
+				const IOperand *rhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				const IOperand *lhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				vm.push(*lhs * *rhs);
+				vm_dump.push_back(*lhs * *rhs);
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
+				}
 				break ;
-			case 9:
+			case 9: {
 				std::cout << "div\n";
+				try {
+				if (!vm.empty() && vm.size() >= 2)
+					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) <<
+						std::endl;
+				else
+					throw BaseException("Exception: Not enough operands to perform instruction");
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
+				}
+				try {
+				const IOperand *rhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				const IOperand *lhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				vm.push(*lhs / *rhs);
+				vm_dump.push_back(*lhs / *rhs);
+				}
+				catch (BaseException &ex)
+				{
+					//repush lhs?
+					std::cout << ex.what() <<std::endl;
+				}
 				break ;
-			case 10:
+					}
+			case 10: {
+				std::cout << "div\n";
+				try {
+				if (!vm.empty() && vm.size() >= 2)
+					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) <<
+						std::endl;
+				else
+					throw BaseException("Exception: Not enough operands to perform instruction");
+				}
+				catch (BaseException &ex)
+				{
+					std::cout << ex.what() <<std::endl;
+				}
+				try {
+				const IOperand *rhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				const IOperand *lhs = vm.top();
+				vm.pop();
+				vm_dump.pop_back();
+				vm.push(*lhs % *rhs);
+				vm_dump.push_back(*lhs % *rhs);
+				}
+				catch (BaseException &ex)
+				{
+					//repush lhs?
+					std::cout << ex.what() <<std::endl;
+				}
+				break ;
 				std::cout << "mod\n";
 				break ;
+					 }
 		}
 		q.pop();
 	}

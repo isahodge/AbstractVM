@@ -5,6 +5,7 @@
 #include "Float.hpp"
 #include "Double.hpp"
 #include "BaseException.hpp"
+#include "Template.hpp"
 #include "header.h"
 #include <vector>
 #include <sstream>
@@ -58,7 +59,8 @@ IOperand const * Create::createInt8( std::string const & value ) const {
 	{
 		throw BaseException("Exception: Underflow on Int8");
 	}
-	return (new class Int8(val, value));	
+	//return (new class Int8(val, value));	
+	return (new Int <int8_t> (val, value, Int8));	
 }
 
 IOperand const * Create::createInt16( std::string const & value ) const {

@@ -34,7 +34,7 @@ std::string const & Int8::toString( void ) const {
 }
 
 IOperand const * Int8::operator+( IOperand const & rhs ) const {
-	Create instance;
+	Create factory;
 	const IOperand *result;
 	int ret;
 
@@ -42,34 +42,91 @@ IOperand const * Int8::operator+( IOperand const & rhs ) const {
 	try {
 		ret = this->_value + std::strtol(rhs.toString().c_str(), NULL, 10);
 		if (ret < std::strtol(_str.c_str(), NULL, 10))
-			throw BaseException("Exception: Overflow on Int8");
-		//else if underflow
+			throw BaseException("Exception: addition overflow");
 	}
 	catch (BaseException &ex)
-	{
+	{//handle overflow; mod by max?
 		std::cout << ex.what() << std::endl;
 	}
-	if (rhs.getPrecision() == 0 || rhs.getPrecision() == 1 || rhs.getPrecision() == 2)
-	{
-		result = instance.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
-	}
+	if (this->getPrecision() < rhs.getPrecision())
+		result = factory.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
 	else
-		result = instance.createOperand(rhs.getType(), std::to_string(ret));
+		result = factory.createOperand(this->getType(), std::to_string(static_cast<int>(ret)));
 	return result;
 }
 
 IOperand const * Int8::operator-( IOperand const & rhs ) const {
-	return (&rhs);
+	Create factory;
+	const IOperand *result;
+	int ret;
+
+	std::cout << "Int8[" << (int)this->_value << "]" << std::endl;
+	try {
+		ret = this->_value - std::strtol(rhs.toString().c_str(), NULL, 10);
+		if (ret > std::strtol(_str.c_str(), NULL, 10))
+			throw BaseException("Exception: subtraction underflow");
+	}
+	catch (BaseException &ex)
+	{//handle underflow; mod by min?
+		std::cout << ex.what() << std::endl;
+	}
+	if (this->getPrecision() < rhs.getPrecision())
+		result = factory.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
+	else
+		result = factory.createOperand(this->getType(), std::to_string(static_cast<int>(ret)));
+	return result;
 }
 
 IOperand const * Int8::operator*( IOperand const & rhs ) const{
-	return (&rhs);
+	Create factory;
+	const IOperand *result;
+	int ret;
+
+	std::cout << "Int8[" << (int)this->_value << "]" << std::endl;
+	try {
+		ret = this->_value * std::strtol(rhs.toString().c_str(), NULL, 10);
+		if (ret < std::strtol(_str.c_str(), NULL, 10))
+			throw BaseException("Exception: multiplication overflow");
+	}
+	catch (BaseException &ex)
+	{//handle overflow; mod by max?
+		std::cout << ex.what() << std::endl;
+	}
+	if (this->getPrecision() < rhs.getPrecision())
+		result = factory.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
+	else
+		result = factory.createOperand(this->getType(), std::to_string(static_cast<int>(ret)));
+	return result;
 }
 
 IOperand const * Int8::operator/( IOperand const & rhs ) const {
-	return (&rhs);
+	Create factory;
+	const IOperand *result;
+	int ret;
+
+	std::cout << "Int8[" << (int)this->_value << "]" << std::endl;
+	if (std::strtol(rhs.toString().c_str(), NULL, 10) == 0)
+		throw BaseException("Exception: division by 0");
+	ret = this->_value / std::strtol(rhs.toString().c_str(), NULL, 10);
+	if (this->getPrecision() < rhs.getPrecision())
+		result = factory.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
+	else
+		result = factory.createOperand(this->getType(), std::to_string(static_cast<int>(ret)));
+	return result;
 }
 
 IOperand const * Int8::operator%( IOperand const & rhs ) const {
-	return (&rhs);
+	Create factory;
+	const IOperand *result;
+	int ret;
+
+	std::cout << "Int8[" << (int)this->_value << "]" << std::endl;
+	if (std::strtol(rhs.toString().c_str(), NULL, 10) == 0)
+		throw BaseException("Exception: mod by 0");
+	ret = this->_value % std::strtol(rhs.toString().c_str(), NULL, 10);
+	if (this->getPrecision() < rhs.getPrecision())
+		result = factory.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
+	else
+		result = factory.createOperand(this->getType(), std::to_string(static_cast<int>(ret)));
+	return result;
 }
