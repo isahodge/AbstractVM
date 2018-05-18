@@ -13,8 +13,7 @@
 
 void	vm_execute(std::queue <Instr const *>& q)
 {
-	std::stack<IOperand const *> vm;
-	std::vector<IOperand const *> vm_dump;
+	std::vector<IOperand const *> vm;
 	std::vector<IOperand const *>::reverse_iterator dump_it;
 
 	std::cout << "Executing instructions:\n";
@@ -23,14 +22,13 @@ void	vm_execute(std::queue <Instr const *>& q)
 		switch (q.front()->getInstruction()) {
 			case 1:
 				std::cout << "push\n";
-				vm.push(q.front()->getOperand());
-				vm_dump.push_back(q.front()->getOperand());
+				vm.push_back(q.front()->getOperand());
 				break ;
 			case 2:
 				std::cout << "assert\n";
 				try {
-				if (!vm.empty() && q.front()->getOperand()->getType() == vm.top()->getType() &&
-						!q.front()->getOperand()->toString().compare(vm.top()->toString()))
+				if (!vm.empty() && q.front()->getOperand()->getType() == vm.back()->getType() &&
+						!q.front()->getOperand()->toString().compare(vm.back()->toString()))
 					std::cout << "Assert true\n";
 				else
 					throw BaseException("Exception: False Assert");
@@ -45,8 +43,7 @@ void	vm_execute(std::queue <Instr const *>& q)
 				try {
 					if (vm.empty())
 						throw BaseException("Exception: Pop on empty stack");
-					vm.pop();
-					vm_dump.pop_back();
+					vm.pop_back();
 				}
 				catch (BaseException &ex)
 				{
@@ -55,16 +52,16 @@ void	vm_execute(std::queue <Instr const *>& q)
 				break ;
 			case 4:
 				std::cout << "dump\n";
-				for (dump_it = vm_dump.rbegin();
-						dump_it != vm_dump.rend(); ++dump_it)
+				for (dump_it = vm.rbegin();
+						dump_it != vm.rend(); ++dump_it)
 					std::cout << (*dump_it)->toString() << std::endl;
 				break ;
 			case 5:
 				std::cout << "print\n";
 				try {
-				if (!vm.empty() && vm.top()->getType() == Int8)
+				if (!vm.empty() && vm.back()->getType() == Int8)
 				{
-					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
 				}
 				else
 					throw BaseException("Exception: False Assert with print operation");
@@ -79,18 +76,15 @@ void	vm_execute(std::queue <Instr const *>& q)
 				try {
 				if (!vm.empty() && vm.size() >= 2)
 				{
-					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
 				}
 				else
 					throw BaseException("Exception: Not enough operands to perform instruction");
-				const IOperand *rhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				const IOperand *lhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				vm.push(*lhs + *rhs);
-				vm_dump.push_back(*lhs + *rhs);
+				const IOperand *rhs = vm.back();
+				vm.pop_back();
+				const IOperand *lhs = vm.back();
+				vm.pop_back();
+				vm.push_back(*lhs + *rhs);
 				}
 				catch (BaseException &ex)
 				{
@@ -102,18 +96,15 @@ void	vm_execute(std::queue <Instr const *>& q)
 				try {
 				if (!vm.empty() && vm.size() >= 2)
 				{
-					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
 				}
 				else
 					throw BaseException("Exception: Not enough operands to perform instruction");
-				const IOperand *rhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				const IOperand *lhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				vm.push(*lhs - *rhs);
-				vm_dump.push_back(*lhs + *rhs);
+				const IOperand *rhs = vm.back();
+				vm.pop_back();
+				const IOperand *lhs = vm.back();
+				vm.pop_back();
+				vm.push_back(*lhs - *rhs);
 				}
 				catch (BaseException &ex)
 				{
@@ -125,18 +116,15 @@ void	vm_execute(std::queue <Instr const *>& q)
 				try {
 				if (!vm.empty() && vm.size() >= 2)
 				{
-					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) << std::endl;
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
 				}
 				else
 					throw BaseException("Exception: Not enough operands to perform instruction");
-				const IOperand *rhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				const IOperand *lhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				vm.push(*lhs * *rhs);
-				vm_dump.push_back(*lhs * *rhs);
+				const IOperand *rhs = vm.back();
+				vm.pop_back();
+				const IOperand *lhs = vm.back();
+				vm.pop_back();
+				vm.push_back(*lhs * *rhs);
 				}
 				catch (BaseException &ex)
 				{
@@ -147,7 +135,7 @@ void	vm_execute(std::queue <Instr const *>& q)
 				std::cout << "div\n";
 				try {
 				if (!vm.empty() && vm.size() >= 2)
-					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) <<
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
 						std::endl;
 				else
 					throw BaseException("Exception: Not enough operands to perform instruction");
@@ -157,14 +145,11 @@ void	vm_execute(std::queue <Instr const *>& q)
 					std::cout << ex.what() <<std::endl;
 				}
 				try {
-				const IOperand *rhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				const IOperand *lhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				vm.push(*lhs / *rhs);
-				vm_dump.push_back(*lhs / *rhs);
+				const IOperand *rhs = vm.back();
+				vm.pop_back();
+				const IOperand *lhs = vm.back();
+				vm.pop_back();
+				vm.push_back(*lhs / *rhs);
 				}
 				catch (BaseException &ex)
 				{
@@ -174,10 +159,10 @@ void	vm_execute(std::queue <Instr const *>& q)
 				break ;
 					}
 			case 10: {
-				std::cout << "div\n";
+				std::cout << "mod\n";
 				try {
 				if (!vm.empty() && vm.size() >= 2)
-					std::cout << (char)(std::stoi(vm.top()->toString(), NULL, 10)) <<
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
 						std::endl;
 				else
 					throw BaseException("Exception: Not enough operands to perform instruction");
@@ -187,22 +172,17 @@ void	vm_execute(std::queue <Instr const *>& q)
 					std::cout << ex.what() <<std::endl;
 				}
 				try {
-				const IOperand *rhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				const IOperand *lhs = vm.top();
-				vm.pop();
-				vm_dump.pop_back();
-				vm.push(*lhs % *rhs);
-				vm_dump.push_back(*lhs % *rhs);
+				const IOperand *rhs = vm.back();
+				vm.pop_back();
+				const IOperand *lhs = vm.back();
+				vm.pop_back();
+				vm.push_back(*lhs % *rhs);
 				}
 				catch (BaseException &ex)
 				{
 					//repush lhs?
 					std::cout << ex.what() <<std::endl;
 				}
-				break ;
-				std::cout << "mod\n";
 				break ;
 					 }
 		}

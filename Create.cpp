@@ -53,13 +53,12 @@ IOperand const * Create::createInt8( std::string const & value ) const {
 	std::cout << (int)val << std::endl;
 	if(val < std::strtol(value.c_str(), NULL, 10))
 	{
-		throw BaseException("Exception: Overflow on Int8");
+		throw BaseException("Exception: Overflow on Int8 in Create");
 	}
 	else if (std::strtol(value.c_str(), NULL, 10) < 0 && val >= 0)
 	{
 		throw BaseException("Exception: Underflow on Int8");
 	}
-	//return (new class Int8(val, value));	
 	return (new Int <int8_t> (val, value, Int8));	
 }
 
@@ -74,7 +73,7 @@ IOperand const * Create::createInt16( std::string const & value ) const {
 	{
 		throw BaseException("Exception: Underflow on Int16");
 	}
-	return (new class Int16(val, value));	
+	return (new Int <int16_t> (val, value, Int16));	
 }
 
 IOperand const * Create::createInt32( std::string const & value ) const {
@@ -88,7 +87,7 @@ IOperand const * Create::createInt32( std::string const & value ) const {
 	{
 		throw BaseException("Exception: Underflow on Int32");
 	}
-	return (new class Int32(val, value));	
+	return (new Int <int32_t> (val, value, Int32));	
 }
 
 IOperand const * Create::createFloat( std::string const & value ) const {
