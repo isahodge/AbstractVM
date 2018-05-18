@@ -11,6 +11,9 @@
 #include <string>
 #include <cstdio>
 
+//arithmetic function that takes ina a pointer to one of the funcitons below: lhs, rhs, vm, fptr
+//add, sub, mul, div, mod functions, params: lhs rhs vm
+
 void	vm_execute(std::queue <Instr const *>& q)
 {
 	std::vector<IOperand const *> vm;
@@ -61,7 +64,8 @@ void	vm_execute(std::queue <Instr const *>& q)
 				try {
 				if (!vm.empty() && vm.back()->getType() == Int8)
 				{
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
+					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
+						std::endl;
 				}
 				else
 					throw BaseException("Exception: False Assert with print operation");
