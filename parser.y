@@ -51,8 +51,14 @@ instr:
 	PUSH opera
 	{
 		Instr const *in;
-		in = new Instr($1, $2);
-		instructions.push(in);
+		try {
+			in = new Instr($1, $2);
+			instructions.push(in);
+		}
+		catch (BaseException &ex)
+		{
+			std::cout << ex.what() << std::endl;
+		}
 	}
 	| ASSERT opera
 	{
@@ -71,7 +77,13 @@ instr:
 opera:
 	 VAL '(' INTEGER ')' endls
 	{
-		$$ = factory->createOperand($1, $3);
+		try {
+			$$ = factory->createOperand($1, $3);
+		}
+		catch (BaseException &ex)
+		{
+			throw;
+		}
 	}
 	 | FVAL '(' FLOAT ')' endls
 	{

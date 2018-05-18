@@ -1,6 +1,8 @@
 #include "Int8.hpp"
 #include "Create.hpp"
+#include "BaseException.hpp"
 #include <climits>
+#include <cstdlib>
 
 class Create;
 
@@ -30,15 +32,27 @@ int		Int8::getPrecision( void ) const {
 std::string const & Int8::toString( void ) const {
 	return _str;
 }
-//need error handling: limits
+
 IOperand const * Int8::operator+( IOperand const & rhs ) const {
 	Create instance;
 	const IOperand *result;
-	double ret;
+	int ret;
 
-	ret = this->_value - 48 + std::stod(rhs.toString());
+	std::cout << "Int8[" << (int)this->_value << "]" << std::endl;
+	try {
+		ret = this->_value + std::strtol(rhs.toString().c_str(), NULL, 10);
+		if (ret < std::strtol(_str.c_str(), NULL, 10))
+			throw BaseException("Exception: Overflow on Int8");
+		//else if underflow
+	}
+	catch (BaseException &ex)
+	{
+		std::cout << ex.what() << std::endl;
+	}
 	if (rhs.getPrecision() == 0 || rhs.getPrecision() == 1 || rhs.getPrecision() == 2)
+	{
 		result = instance.createOperand(rhs.getType(), std::to_string(static_cast<int>(ret)));
+	}
 	else
 		result = instance.createOperand(rhs.getType(), std::to_string(ret));
 	return result;
