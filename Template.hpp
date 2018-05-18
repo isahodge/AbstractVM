@@ -32,117 +32,102 @@ public:
 		return _type;
 	}
 
-	IOperand const * operator+( IOperand const & rhs ) const
+	IOperand const * result( IOperand const & rhs, double ret ) const
 	{
 		Create factory;
-		const IOperand *result;
-		int ret;
+
+		if (this->getPrecision() < rhs.getPrecision())
+		{
+			if (rhs.getPrecision() >= 3)
+				return (factory.createOperand(rhs.getType(),
+						std::to_string(static_cast<double>(ret))));
+			else
+				return (factory.createOperand(rhs.getType(),
+						std::to_string(static_cast<int>(ret))));
+		}
+		else
+		{
+			if (this->getPrecision() >= 3)
+				return (factory.createOperand(this->getType(),
+						std::to_string(static_cast<double>(ret))));
+			else
+				return ( factory.createOperand(this->getType(),
+						std::to_string(static_cast<int>(ret))));
+		}
+		return NULL;	
+	}
+
+	IOperand const * operator+( IOperand const & rhs ) const
+	{
+		double ret;
 
 		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
 		try {
-			ret = this->_value + std::strtol(rhs.toString().c_str(), NULL, 10);
-			if (ret < std::strtol(_str.c_str(), NULL, 10))
+			ret = this->_value + std::strtod(rhs.toString().c_str(), NULL);
+			if (ret < std::strtod(_str.c_str(), NULL))
 				throw BaseException("Exception: addition overflow");
 		}
 		catch (BaseException &ex)
 		{//handle overflow; mod by max?
 			std::cout << ex.what() << std::endl;
 		}
-		if (this->getPrecision() < rhs.getPrecision())
-			result = factory.createOperand(rhs.getType(),
-					std::to_string(static_cast<int>(ret)));
-		else
-			result = factory.createOperand(this->getType(),
-					std::to_string(static_cast<int>(ret)));
-		return result;
+		return result(rhs, ret);
 	}
 
 	IOperand const * operator-( IOperand const & rhs ) const
 	{
-		Create factory;
-		const IOperand *result;
-		int ret;
+		double ret;
 
 		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
 		try {
-			ret = this->_value - std::strtol(rhs.toString().c_str(), NULL, 10);
-			if (ret > std::strtol(_str.c_str(), NULL, 10))
+			ret = this->_value - std::strtod(rhs.toString().c_str(), NULL);
+			if (ret > std::strtod(_str.c_str(), NULL))
 				throw BaseException("Exception: subtraction underflow");
 		}
 		catch (BaseException &ex)
 		{//handle underflow; mod by min?
 			std::cout << ex.what() << std::endl;
 		}
-		if (this->getPrecision() < rhs.getPrecision())
-			result = factory.createOperand(rhs.getType(),
-					std::to_string(static_cast<int>(ret)));
-		else
-			result = factory.createOperand(this->getType(),
-					std::to_string(static_cast<int>(ret)));
-		return result;
+		return result(rhs, ret);
 	}
 
 	IOperand const * operator*( IOperand const & rhs ) const
 	{
-		Create factory;
-		const IOperand *result;
-		int ret;
+		double ret;
 
 		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
 		try {
-			ret = this->_value * std::strtol(rhs.toString().c_str(), NULL, 10);
-			if (ret < std::strtol(_str.c_str(), NULL, 10))
+			ret = this->_value * std::strtod(rhs.toString().c_str(), NULL);
+			if (ret < std::strtod(_str.c_str(), NULL))
 				throw BaseException("Exception: multiplication overflow");
 		}
 		catch (BaseException &ex)
 		{//handle overflow; mod by max?
 			std::cout << ex.what() << std::endl;
 		}
-		if (this->getPrecision() < rhs.getPrecision())
-			result = factory.createOperand(rhs.getType(),
-					std::to_string(static_cast<int>(ret)));
-		else
-			result = factory.createOperand(this->getType(),
-					std::to_string(static_cast<int>(ret)));
-		return result;
+		return result(rhs, ret);
 	}
 
 	IOperand const * operator/( IOperand const & rhs ) const
 	{
-		Create factory;
-		const IOperand *result;
-		int ret;
+		double ret;
 
 		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
-		if (std::strtol(rhs.toString().c_str(), NULL, 10) == 0)
+		if (std::strtod(rhs.toString().c_str(), NULL) == 0)
 			throw BaseException("Exception: division by 0");
-		ret = this->_value / std::strtol(rhs.toString().c_str(), NULL, 10);
-		if (this->getPrecision() < rhs.getPrecision())
-			result = factory.createOperand(rhs.getType(),
-					std::to_string(static_cast<int>(ret)));
-		else
-			result = factory.createOperand(this->getType(),
-					std::to_string(static_cast<int>(ret)));
-		return result;
+		ret = this->_value / std::strtod(rhs.toString().c_str(), NULL);
+		return result(rhs, ret);
 	}
 
 	IOperand const * operator%( IOperand const & rhs ) const
 	{
-		Create factory;
-		const IOperand *result;
-		int ret;
+		double ret;
 
 		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
-		if (std::strtol(rhs.toString().c_str(), NULL, 10) == 0)
+		if (std::strtod(rhs.toString().c_str(), NULL) == 0)
 			throw BaseException("Exception: mod by 0");
-		ret = this->_value % std::strtol(rhs.toString().c_str(), NULL, 10);
-		if (this->getPrecision() < rhs.getPrecision())
-			result = factory.createOperand(rhs.getType(),
-					std::to_string(static_cast<int>(ret)));
-		else
-			result = factory.createOperand(this->getType(),
-					std::to_string(static_cast<int>(ret)));
-		return result;
+		ret = (long long int)this->_value % std::strtol(rhs.toString().c_str(), NULL, 10);
+		return result(rhs, ret);
 	}
 
 	std::string const & toString( void ) const
