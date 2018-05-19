@@ -5,7 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
-#include <float.h>
+#include <cfloat>
 
 
 Create::Create( void ) {
@@ -33,13 +33,17 @@ Create::~Create( void ) {
 }
 
 IOperand const * Create::createOperand( eOperandType type, std::string const & value ) const {
+	IOperand const *p = NULL;
 	try {
-		IOperand const *p = (this->*functionVector[type])(value);
+		p = (this->*functionVector[type])(value);
+		std::cout << "Returning p\n";
 		return p;
 	}
 	catch (BaseException &ex)
 	{
-		std::cout << ex.what() << std::endl;
+		std::cout << "Caught in CreateOperand\n";
+		//std::cout << ex.what() << std::endl;
+		throw;
 	}
 	return NULL;
 }
@@ -88,9 +92,17 @@ IOperand const * Create::createInt32( std::string const & value ) const {
 }
 
 IOperand const * Create::createFloat( std::string const & value ) const {
-	float val;
-	val = (float)std::strtod(value.c_str(), NULL);
-	return (new Int <float> (val, value, Float));	
+	double val;
+	val = std::strtod(value.c_str(), NULL);
+	if(val > FLT_MAX)
+	{
+		throw BaseException("Exception: Overflow on Float");
+	}
+	else if (std::strtod(value.c_str(), NULL) < 0 && val >= 0)
+	{
+		throw BaseException("Exception: Underflow on Float");
+	}
+	return (new Int <float> ((float)val, value, Float));	
 }
 
 IOperand const * Create::createDouble( std::string const & value ) const {

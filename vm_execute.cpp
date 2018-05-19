@@ -39,20 +39,23 @@ void	mod(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *>
 void	arithmetic(std::vector<IOperand const *> &vm, void (*operate)(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm))
 {
 	try {
-		if (!vm.empty() && vm.size() >= 2)
-		{
-			std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) << std::endl;
-		}
-		else
+		if (vm.empty() || vm.size() < 2)
 			throw BaseException("Exception: Not enough operands to perform instruction");
 		const IOperand *rhs = vm.back();
 		vm.pop_back();
 		const IOperand *lhs = vm.back();
 		vm.pop_back();
-		operate(lhs, rhs, vm);
+		try {
+			operate(lhs, rhs, vm);
+		}
+		catch (BaseException &ex)
+		{
+			throw;
+		}
 	}
 	catch (BaseException &ex)
 	{
+		std::cout << "Caught in arithmetic" <<std::endl;
 		std::cout << ex.what() <<std::endl;
 	}
 
@@ -61,10 +64,7 @@ void	arithmetic(std::vector<IOperand const *> &vm, void (*operate)(const IOperan
 void	arith_dm(std::vector<IOperand const *> &vm, void (*operate)(const IOperand *lhs, const IOperand *rhs, std::vector<IOperand const *> &vm))
 {
 	try {
-		if (!vm.empty() && vm.size() >= 2)
-			std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
-				std::endl;
-		else
+		if (vm.empty() || vm.size() < 2)
 			throw BaseException("Exception: Not enough operands to perform instruction");
 	}
 	catch (BaseException &ex)
@@ -76,12 +76,10 @@ void	arith_dm(std::vector<IOperand const *> &vm, void (*operate)(const IOperand 
 		vm.pop_back();
 		const IOperand *lhs = vm.back();
 		vm.pop_back();
-		//vm.push_back(*lhs / *rhs);
 		operate(lhs, rhs, vm);
 		}
 	catch (BaseException &ex)
 	{
-		//repush lhs?
 		std::cout << ex.what() <<std::endl;
 	}
 }
@@ -97,16 +95,18 @@ void	vm_execute(std::queue <Instr const *>& q)
 		switch (q.front()->getInstruction()) {
 			case 1:
 				std::cout << "push\n";
-				vm.push_back(q.front()->getOperand());
+				if (q.front()->getOperand())
+					vm.push_back(q.front()->getOperand());
 				break ;
 			case 2:
 				std::cout << "assert\n";
 				try {
-				if (!vm.empty() && q.front()->getOperand()->getType() == vm.back()->getType() &&
-						!q.front()->getOperand()->toString().compare(vm.back()->toString()))
-					std::cout << "Assert true\n";
-				else
-					throw BaseException("Exception: False Assert");
+					if (!vm.empty() && q.front()->getOperand() &&
+							q.front()->getOperand()->getType() == vm.back()->getType() &&
+							!q.front()->getOperand()->toString().compare(vm.back()->toString()))
+						std::cout << "Assert true\n";
+					else
+						throw BaseException("Exception: False Assert");
 				}
 				catch (BaseException &ex)
 				{
@@ -134,13 +134,13 @@ void	vm_execute(std::queue <Instr const *>& q)
 			case 5:
 				std::cout << "print\n";
 				try {
-				if (!vm.empty() && vm.back()->getType() == Int8)
-				{
-					std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
-						std::endl;
-				}
-				else
-					throw BaseException("Exception: False Assert with print operation");
+					if (!vm.empty() && vm.back()->getType() == Int8)
+					{
+						std::cout << (char)(std::stoi(vm.back()->toString(), NULL, 10)) <<
+							std::endl;
+					}
+					else
+						throw BaseException("Exception: False Assert with print operation");
 				}
 				catch (BaseException &ex)
 				{
