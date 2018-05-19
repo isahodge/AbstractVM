@@ -40,7 +40,7 @@ std::queue <Instr const *> instructions;
 %%
 
 s:
-	instructs EXIT SEP { YYACCEPT; }
+	instructs  { YYACCEPT; }
 
 instructs:
 		 instructs instr
@@ -50,14 +50,8 @@ instr:
 	PUSH opera
 	{
 		Instr const *in;
-		try {
-			in = new Instr($1, $2);
-			instructions.push(in);
-		}
-		catch (BaseException &ex)
-		{
-			std::cout << ex.what() << std::endl;
-		}
+		in = new Instr($1, $2);
+		instructions.push(in);
 	}
 	| ASSERT opera
 	{
@@ -71,7 +65,7 @@ instr:
 		in = new Instr($1);
 		instructions.push(in);
 	}
-	| error endls ;
+	| error { std::cout << "Syntax Error\n"; } endls
 
 opera:
 	 VAL '(' INTEGER ')' endls
@@ -84,6 +78,11 @@ opera:
 			$$ = NULL;
 			std::cout << ex.what() << std::endl;
 		}
+		catch (std::out_of_range &ex)
+		{
+			$$ = NULL;
+			std::cout << ex.what() << std::endl;
+		}
 	}
 	 | FVAL '(' FLOAT ')' endls
 	{
@@ -91,6 +90,11 @@ opera:
 			$$ = factory->createOperand($1, $3);
 		}
 		catch (BaseException &ex)
+		{
+			$$ = NULL;
+			std::cout << ex.what() << std::endl;
+		}
+		catch (std::out_of_range &ex)
 		{
 			$$ = NULL;
 			std::cout << ex.what() << std::endl;
@@ -121,7 +125,6 @@ int	main(int argc, char **argv)
 		if (feof(yyin))
 			break ;
 	}
-	std::cout << "End of program" << std::endl;
 	try {
 			vm_execute(instructions);
 		}
