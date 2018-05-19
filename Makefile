@@ -6,12 +6,12 @@
 #    By: ihodge <ihodge@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/20 13:52:57 by ihodge            #+#    #+#              #
-#    Updated: 2018/05/18 10:38:30 by ihodge           ###   ########.fr        #
+#    Updated: 2018/05/18 18:15:43 by ihodge           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = avm
-LIST = Create Instr vm_execute BaseException Float Double
+LIST = Create Instr vm_execute BaseException
 
 SRC = $(addsuffix .cpp, $(LIST))
 OBJ = $(addsuffix .o, $(LIST))
@@ -20,14 +20,14 @@ CCFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
-parser.tab.c parser.tab.h: parser.y
-	bison -d parser.y
+parser.tab.cc parser.tab.h: parser.yxx
+	bison -o parser.tab.cc -d parser.yxx
 
 lex.yy.c: scanner.lex parser.tab.h
-	flex scanner.lex
+	flex -o lex.yy.cc scanner.lex
 
-$(NAME): $(OBJ) lex.yy.c parser.tab.c parser.tab.h
-	@g++ -ll parser.tab.c lex.yy.c $(SRC) -o $(NAME)
+$(NAME): $(OBJ) lex.yy.cc parser.tab.cc parser.tab.h
+	@g++ -ll parser.tab.cc lex.yy.cc $(SRC) -o $(NAME)
 	@echo "\033[32;1m"$(NAME)" created\033[0m"
 
 clean:
