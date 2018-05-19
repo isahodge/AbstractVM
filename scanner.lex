@@ -9,7 +9,7 @@
 #include "IOperand.hpp"
 #include "header.h"
 #define YY_DECL extern "C" int yylex()
-#include "parser.tab.h"
+#include "parser.tab.hh"
 %}
 DIGIT	[-]?[0-9]+
 FLOAT	[-]?[0-9]+\.[0-9]+

@@ -1,9 +1,4 @@
 #include "Create.hpp"
-#include "Int8.hpp"
-#include "Int16.hpp"
-#include "Int32.hpp"
-#include "Float.hpp"
-#include "Double.hpp"
 #include "BaseException.hpp"
 #include "Template.hpp"
 #include "header.h"
@@ -29,6 +24,7 @@ Create::Create( Create const & src )
 
 Create & Create::operator=( Create const & rhs )
 {
+	(void)rhs;
 	return *this;
 }
 
