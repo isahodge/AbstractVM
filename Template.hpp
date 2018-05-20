@@ -43,7 +43,7 @@ public:
 						std::to_string(static_cast<double>(ret))));
 			else
 				return (factory.createOperand(rhs.getType(),
-						std::to_string(static_cast<int>(ret))));
+						std::to_string(static_cast<long>(ret))));
 		}
 		else
 		{
@@ -52,7 +52,7 @@ public:
 						std::to_string(static_cast<double>(ret))));
 			else
 				return ( factory.createOperand(this->getType(),
-						std::to_string(static_cast<int>(ret))));
+						std::to_string(static_cast<long>(ret))));
 		}
 		return NULL;	
 	}
@@ -66,8 +66,7 @@ public:
 			ret = this->_value + std::stod(rhs.toString(), NULL);
 		}
 		catch (std::out_of_range &ex)
-		{//rethrow?
-			std::cout << ex.what() << std::endl;
+		{
 			throw;
 		}
 		return result(rhs, ret);
@@ -79,11 +78,9 @@ public:
 
 		ret = 0;
 		try {
-			ret = this->_value - std::strtod(rhs.toString().c_str(), NULL);
-			if (ret > std::strtod(_str.c_str(), NULL))
-				throw BaseException("Exception: subtraction underflow");
+			ret = this->_value - std::stod(rhs.toString(), NULL);
 		}
-		catch (BaseException &ex)
+		catch (std::out_of_range &ex)
 		{
 			throw;
 		}
@@ -99,7 +96,7 @@ public:
 			ret = this->_value * std::stod(rhs.toString(), NULL);
 		}
 		catch (std::out_of_range &ex)
-		{//handle overflow; mod by max?//rethrow?
+		{
 			std::cout << ex.what() << std::endl;
 			throw;
 		}
@@ -127,7 +124,8 @@ public:
 		}
 		catch (std::out_of_range &ex)
 		{
-			std::cout << ex.what() << std::endl;
+			//std::cout << ex.what() << std::endl;
+			throw;
 		}
 		ret = (long long int)this->_value % std::strtol(rhs.toString().c_str(), NULL, 10);
 		return result(rhs, ret);

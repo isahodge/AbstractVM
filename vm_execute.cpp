@@ -78,7 +78,6 @@ void	arith_dm(std::vector<IOperand const *> &vm, void (*operate)(const IOperand 
 		}
 		catch (BaseException &ex)
 		{
-			std::cout << ex.what() <<std::endl;
 			throw;
 		}
 	}

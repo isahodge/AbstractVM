@@ -45,14 +45,21 @@ IOperand const * Create::createOperand( eOperandType type, std::string const & v
 
 IOperand const * Create::createInt8( std::string const & value ) const {
 	char val;
-	val = (char)std::strtol(value.c_str(), NULL, 10);
-	if(val < std::strtol(value.c_str(), NULL, 10))
+	try {
+	val = (char)std::stol(value, NULL, 10);
+	if(val < std::stol(value, NULL, 10))
 	{
-		throw BaseException("Exception: Overflow on Int8 in Create");
+		throw BaseException("Exception: Overflow on Int8");
 	}
 	else if (std::strtol(value.c_str(), NULL, 10) < 0 && val >= 0)
 	{
 		throw BaseException("Exception: Underflow on Int8");
+	}
+	}
+	catch (std::out_of_range &ex)
+	{
+		std::cout << ex.what() << std::endl;
+		throw;
 	}
 	return (new Int <int8_t> (val, value, Int8));	
 }
@@ -73,14 +80,21 @@ IOperand const * Create::createInt16( std::string const & value ) const {
 
 IOperand const * Create::createInt32( std::string const & value ) const {
 	int val;
-	val = (int)std::strtol(value.c_str(), NULL, 10);
-	if(val < std::strtol(value.c_str(), NULL, 10))
+	try {
+	val = std::stoi(value, NULL, 10);
+	if(val < (int)std::strtol(value.c_str(), NULL, 10))
 	{
 		throw BaseException("Exception: Overflow on Int32");
 	}
 	else if (std::strtol(value.c_str(), NULL, 10) < 0 && val >= 0)
 	{
 		throw BaseException("Exception: Underflow on Int32");
+	}
+	}
+	catch (std::out_of_range &ex)
+	{
+		std::cout << ex.what() << std::endl;
+		throw;
 	}
 	return (new Int <int32_t> (val, value, Int32));	
 }
@@ -92,7 +106,7 @@ IOperand const * Create::createFloat( std::string const & value ) const {
 	{
 		throw BaseException("Exception: Overflow on Float");
 	}
-	else if (val < FLT_MIN)
+	else if (val < -FLT_MAX)
 	{
 		throw BaseException("Exception: Underflow on Float");
 	}
