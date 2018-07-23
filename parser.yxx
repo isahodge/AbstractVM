@@ -3,7 +3,6 @@
 #include <iostream>
 #include "Create.hpp"
 #include "IOperand.hpp"
-#include "Int8.hpp"
 #include "header.h"
 #include "Instr.hpp"
 #include "BaseException.hpp"
@@ -14,7 +13,7 @@
 extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE	*yyin;
-void yyerror(const char *s);
+extern "C" void yyerror(const char *s);
 
 Create *factory = new Create;
 std::queue <Instr const *> instructions;
@@ -41,7 +40,7 @@ std::queue <Instr const *> instructions;
 %%
 
 s:
-	instructs EXIT SEP { YYACCEPT; }
+	instructs  { YYACCEPT; }
 
 instructs:
 		 instructs instr
@@ -51,14 +50,8 @@ instr:
 	PUSH opera
 	{
 		Instr const *in;
-		try {
-			in = new Instr($1, $2);
-			instructions.push(in);
-		}
-		catch (BaseException &ex)
-		{
-			std::cout << ex.what() << std::endl;
-		}
+		in = new Instr($1, $2);
+		instructions.push(in);
 	}
 	| ASSERT opera
 	{
@@ -72,7 +65,7 @@ instr:
 		in = new Instr($1);
 		instructions.push(in);
 	}
-	| error endls ;
+	| error { std::cout << "Syntax Error\n"; } endls
 
 opera:
 	 VAL '(' INTEGER ')' endls
@@ -82,12 +75,30 @@ opera:
 		}
 		catch (BaseException &ex)
 		{
-			throw;
+			$$ = NULL;
+			std::cout << ex.what() << std::endl;
+		}
+		catch (std::out_of_range &ex)
+		{
+			$$ = NULL;
+			std::cout << ex.what() << std::endl;
 		}
 	}
 	 | FVAL '(' FLOAT ')' endls
 	{
-		$$ = factory->createOperand($1, $3);
+		try {
+			$$ = factory->createOperand($1, $3);
+		}
+		catch (BaseException &ex)
+		{
+			$$ = NULL;
+			std::cout << ex.what() << std::endl;
+		}
+		catch (std::out_of_range &ex)
+		{
+			$$ = NULL;
+			std::cout << ex.what() << std::endl;
+		}
 	}
 
 endls:
@@ -114,7 +125,6 @@ int	main(int argc, char **argv)
 		if (feof(yyin))
 			break ;
 	}
-	std::cout << "End of program" << std::endl;
 	try {
 			vm_execute(instructions);
 		}
@@ -124,8 +134,10 @@ int	main(int argc, char **argv)
 		}
 	return (0);
 }
-
-void yyerror(const char *s)
+extern "C"
 {
-	std::cout << "EEK, parse error!  Message: " << s << std::endl;
+	void yyerror(const char *s)
+	{
+		std::cout << "EEK, parse error!  Message: " << s << std::endl;
+	}
 }

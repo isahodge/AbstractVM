@@ -16,4 +16,17 @@ pop
 
 assert double(42.42)
 
+
 exit
+
+push int8(90)
+
+dump
+
+
+
+
+
+
+
+

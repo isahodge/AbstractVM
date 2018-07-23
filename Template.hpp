@@ -43,7 +43,7 @@ public:
 						std::to_string(static_cast<double>(ret))));
 			else
 				return (factory.createOperand(rhs.getType(),
-						std::to_string(static_cast<int>(ret))));
+						std::to_string(static_cast<long>(ret))));
 		}
 		else
 		{
@@ -52,7 +52,7 @@ public:
 						std::to_string(static_cast<double>(ret))));
 			else
 				return ( factory.createOperand(this->getType(),
-						std::to_string(static_cast<int>(ret))));
+						std::to_string(static_cast<long>(ret))));
 		}
 		return NULL;	
 	}
@@ -61,15 +61,13 @@ public:
 	{
 		double ret;
 
-		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
+		ret = 0;
 		try {
-			ret = this->_value + std::strtod(rhs.toString().c_str(), NULL);
-			if (ret < std::strtod(_str.c_str(), NULL))
-				throw BaseException("Exception: addition overflow");
+			ret = this->_value + std::stod(rhs.toString(), NULL);
 		}
-		catch (BaseException &ex)
-		{//handle overflow; mod by max?
-			std::cout << ex.what() << std::endl;
+		catch (std::out_of_range &ex)
+		{
+			throw;
 		}
 		return result(rhs, ret);
 	}
@@ -78,15 +76,13 @@ public:
 	{
 		double ret;
 
-		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
+		ret = 0;
 		try {
-			ret = this->_value - std::strtod(rhs.toString().c_str(), NULL);
-			if (ret > std::strtod(_str.c_str(), NULL))
-				throw BaseException("Exception: subtraction underflow");
+			ret = this->_value - std::stod(rhs.toString(), NULL);
 		}
-		catch (BaseException &ex)
-		{//handle underflow; mod by min?
-			std::cout << ex.what() << std::endl;
+		catch (std::out_of_range &ex)
+		{
+			throw;
 		}
 		return result(rhs, ret);
 	}
@@ -95,15 +91,14 @@ public:
 	{
 		double ret;
 
-		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
+		ret = 0;
 		try {
-			ret = this->_value * std::strtod(rhs.toString().c_str(), NULL);
-			if (ret < std::strtod(_str.c_str(), NULL))
-				throw BaseException("Exception: multiplication overflow");
+			ret = this->_value * std::stod(rhs.toString(), NULL);
 		}
-		catch (BaseException &ex)
-		{//handle overflow; mod by max?
+		catch (std::out_of_range &ex)
+		{
 			std::cout << ex.what() << std::endl;
+			throw;
 		}
 		return result(rhs, ret);
 	}
@@ -112,7 +107,7 @@ public:
 	{
 		double ret;
 
-		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
+		ret = 0;
 		if (std::strtod(rhs.toString().c_str(), NULL) == 0)
 			throw BaseException("Exception: division by 0");
 		ret = this->_value / std::strtod(rhs.toString().c_str(), NULL);
@@ -123,9 +118,15 @@ public:
 	{
 		double ret;
 
-		std::cout << "Int[" << (int)this->_value << "]" << std::endl;
-		if (std::strtod(rhs.toString().c_str(), NULL) == 0)
-			throw BaseException("Exception: mod by 0");
+		try {
+			if (std::stod(rhs.toString(), NULL) == 0)
+				throw BaseException("Exception: mod by 0");
+		}
+		catch (std::out_of_range &ex)
+		{
+			//std::cout << ex.what() << std::endl;
+			throw;
+		}
 		ret = (long long int)this->_value % std::strtol(rhs.toString().c_str(), NULL, 10);
 		return result(rhs, ret);
 	}

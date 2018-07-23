@@ -9,7 +9,7 @@
 #include "IOperand.hpp"
 #include "header.h"
 #define YY_DECL extern "C" int yylex()
-#include "parser.tab.h"
+#include "parser.tab.hh"
 %}
 DIGIT	[-]?[0-9]+
 FLOAT	[-]?[0-9]+\.[0-9]+
@@ -34,9 +34,9 @@ int16	{ yylval.eval = Int16; return VAL; }
 int32	{ yylval.eval = Int32; return VAL; }
 float	{ yylval.eval = Float; return FVAL; }
 double	{ yylval.eval = Double; return FVAL; }
-exit	{ if (yyin != stdin) return EXIT; }
+exit	{ yylval.ival = 11 ; return COMMAND; }
 {INSTR}	{ std::cout << "unrecognized command/value "  << yytext; }
-\;\;	{ if (yyin == stdin) return EXIT; }
+\;\;	{ if (yyin == stdin) return 0; }
 \;.*	;
 \(		return '(';
 \)		return ')';
